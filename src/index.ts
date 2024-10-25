@@ -1,26 +1,57 @@
 import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
 
-// Import the native module. On web, it will be resolved to ExpoForegroundService.web.ts
-// and on native platforms to ExpoForegroundService.ts
+import { StartServiceConfig, ServiceType, Event, OnStartEventPayload, OnErrorEventPayload } from './ExpoForegroundService.types';
 import ExpoForegroundServiceModule from './ExpoForegroundServiceModule';
-import ExpoForegroundServiceView from './ExpoForegroundServiceView';
-import { ChangeEventPayload, ExpoForegroundServiceViewProps } from './ExpoForegroundService.types';
 
-// Get the native constant value.
-export const PI = ExpoForegroundServiceModule.PI;
-
-export function hello(): string {
-  return ExpoForegroundServiceModule.hello();
+export async function startService(config: StartServiceConfig, callback: () => Promise<void>, onError?: (error: any) => void): Promise<void> {
+  config = {
+    ...config,
+    notification: {
+      id: 1,
+      channelId: 'expo_foreground_service',
+      channelName: 'Expo Foreground Service',
+      ...config.notification,
+    },
+  };
+  await ExpoForegroundServiceModule.startService(config);
+  return new Promise<void>((resolve, reject) => {
+    const subscription = addOnStartListener(async () => {
+      try {
+        await callback();
+        subscription.remove();
+        resolve();
+      } catch (error) {
+        subscription.remove();
+        if (onError) {
+          onError(error);
+        }
+        reject(error);
+      }
+    });
+    
+    const errorSubscription = addOnErrorListener((event) => {
+      errorSubscription.remove();
+      subscription.remove();
+      if (onError) {
+        onError(event.error);
+      }
+      reject(new Error(event.error));
+    });
+  });
 }
 
-export async function setValueAsync(value: string) {
-  return await ExpoForegroundServiceModule.setValueAsync(value);
+export async function stopService(): Promise<void> {
+  return await ExpoForegroundServiceModule.stopService();
 }
 
 const emitter = new EventEmitter(ExpoForegroundServiceModule ?? NativeModulesProxy.ExpoForegroundService);
 
-export function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription {
-  return emitter.addListener<ChangeEventPayload>('onChange', listener);
+export function addOnStartListener(listener: (event: OnStartEventPayload) => void): Subscription {
+  return emitter.addListener<OnStartEventPayload>(Event.OnStart, listener);
 }
 
-export { ExpoForegroundServiceView, ExpoForegroundServiceViewProps, ChangeEventPayload };
+export function addOnErrorListener(listener: (event: OnErrorEventPayload) => void): Subscription {
+  return emitter.addListener<OnErrorEventPayload>(Event.OnError, listener);
+}
+
+export { ServiceType, StartServiceConfig };

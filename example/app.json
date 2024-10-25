@@ -20,10 +20,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "expo.modules.foregroundservice.example"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "expo.modules.foregroundservice.example",
+      "jsEngine": "hermes"
     }
   }
 }
