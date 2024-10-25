@@ -1,0 +1,42 @@
+{
+  "name": "expo-foreground-service",
+  "version": "0.1.0",
+  "description": "Android Foreground Services with Expo",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "open:ios": "xed example/ios",
+    "open:android": "open -a \"Android Studio\" example/android"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-foreground-service",
+    "ExpoForegroundService"
+  ],
+  "repository": "https://github.com/HashimTheArab/expo-foreground-service",
+  "bugs": {
+    "url": "https://github.com/HashimTheArab/expo-foreground-service/issues"
+  },
+  "author": "Hashim <hashimssoftware@gmail.com> (https://github.com/HashimTheArab)",
+  "license": "MIT",
+  "homepage": "https://github.com/HashimTheArab/expo-foreground-service#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react": "^18.0.25",
+    "expo-module-scripts": "^3.5.2",
+    "expo-modules-core": "^1.12.24"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
